@@ -9,7 +9,14 @@ const edit = require('../image/edit.png') ;
  
 export default class ListChecked extends Component {
     static navigationOptions = {
-        title: 'List Users',
+        title: 'List Company',
+        headerStyle: {
+            backgroundColor: '#189B8B',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
     };
     constructor(props){
         super(props);
@@ -177,9 +184,6 @@ export default class ListChecked extends Component {
   render() {
     return (
       <View style={styles.container} > 
-        <Text style={styles.h2text}>
-          Company 
-        </Text>
           <FlatList
           data={this.state.data}
           ItemSeparatorComponent = {this.FlatListItemSeparator}
@@ -208,14 +212,6 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       //alignItems: 'center',
       backgroundColor: '#F5FCFF',
-    },
-    h2text: {
-      marginTop: 10,
-      fontFamily: 'Helvetica',
-      fontSize: 36,
-      fontWeight: 'bold',
-      alignItems: 'center',
-      textAlign: 'center'
     },
     flatview: {
       justifyContent: 'flex-start',

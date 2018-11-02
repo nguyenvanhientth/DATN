@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import {AppRegistry,StyleSheet,Text,View,Image,ScrollView,
     AsyncStorage,TouchableOpacity,ImageBackground,Picker} from 'react-native';
+import DateTimePicker from "react-native-modal-datetime-picker";
 import env from '../environment/env';
 import Dialog from "react-native-dialog";
 
 
 var STORAGE_KEY = 'key_access_token';
-const background = require('../image/hinhnen.jpg') ;
+const background = require('../image/hinhnen.png') ;
+const update = require('../image/update.png') ;
+const date = require('../image/date.png') ;
 const BASE_URL = env;
 
 export default class Information extends Component {
@@ -27,6 +30,12 @@ export default class Information extends Component {
       passNew: '',
       passConfig: '',
       dialogUpdate: false,
+      firstName1: null,
+      lastName1: null,
+      DOB1: null,
+      Address1: null,
+      PhoneNumber1: null,
+      isDateTimePickerVisible: false,
     };
   }
   
@@ -73,27 +82,22 @@ export default class Information extends Component {
     }
     _onChaneFist = (e)=>{
         this.setState({
-            firstName:e
+            firstName1:e
         })
     }
     _onChaneLast=(e)=>{
         this.setState({
-            lastName:e
-        })
-    }
-    _onChaneDOB=(e)=>{
-        this.setState({
-            DOB:e
+            lastName1:e
         })
     }
     _onChaneAddress=(e)=>{
         this.setState({
-            Address:e
+            Address1:e
         })
     }
     _onChanePhoneNumber=(e)=>{
         this.setState({
-            PhoneNumber:e
+            PhoneNumber1:e
         })
     }
     handleCancel = ()=>{
@@ -105,11 +109,11 @@ export default class Information extends Component {
         AsyncStorage.getItem(STORAGE_KEY).then((user_data_json) => {
             let token = user_data_json;  
             let serviceUrl = BASE_URL+  "Account/ChangeInformationUser";
-            let firstName = this.state.firstName;
-            let lastName = this.state.lastName;
-            let dateOfBirth = this.state.DOB;
-            let address = this.state.Address;
-            let PhoneNumber = this.state.PhoneNumber;
+            let firstName = this.state.firstName1;
+            let lastName = this.state.lastName1;
+            let dateOfBirth = this.state.DOB1;
+            let address = this.state.Address1;
+            let PhoneNumber = this.state.PhoneNumber1;
             // kiem tra o day 
               fetch(serviceUrl,{
                   method: "PUT",          
@@ -130,8 +134,7 @@ export default class Information extends Component {
                   .then((responseJSON) => {  
                       console.warn('signup',responseJSON)
                           if(responseJSON.ok){
-                              var { navigate } = this.props.navigation;
-                              navigate('drawerStack');
+                              this.componentWillMount();
                               alert('Update Success!');
                           }
                           else {
@@ -147,17 +150,25 @@ export default class Information extends Component {
             dialogUpdate:false,
         })
     }
+    _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
 
+    _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
+
+     _handleDatePicked = date => {
+        this.setState({ DOB1: date.toString() });
+        this._hideDateTimePicker();
+    };
  render() {
+    const { isDateTimePickerVisible, DOB1 } = this.state;
         return (
             <ImageBackground style={[styles.container, styles.background]}
                 source = {background}  resizeMode="cover">
                 <Text style = {{color: "#0404B4", fontSize: 30}}> Hi {this.state.firstName}</Text>
                 <View style={styles.ThongTin}>
-                    <Text style = {{fontSize: 32, color: "black", textAlign: 'left'}}>Thong Tin:</Text>
-                    <Text style={styles.text}> userName: {this.state.userName} </Text>
-                    <Text style={styles.text}> firstName: {this.state.firstName} </Text>
-                    <Text style={styles.text}> lastName: {this.state.lastName} </Text>
+                    <Text style = {{fontSize: 32, color: "#424040", textAlign: 'left'}}>Information:</Text>
+                    <Text style={styles.text}> UserName: {this.state.userName} </Text>
+                    <Text style={styles.text}> FirstName: {this.state.firstName} </Text>
+                    <Text style={styles.text}> LastName: {this.state.lastName} </Text>
                     <Text style={styles.text}> Address: {this.state.Address} </Text>
                     <Text style={styles.text}> Email: {this.state.Email} </Text>
                     <Text style={styles.text}> DateOfBirth: {this.state.DOB} </Text>
@@ -168,19 +179,35 @@ export default class Information extends Component {
                 <View style={styles.footer}>
                     <TouchableOpacity activeOpacity={.5} onPress={this.dialogUpdate.bind(this)} keyboardShouldPersistTaps={true}>
                         <View style={styles.button}>
-                            <Text style={styles.buttonText}> Update Information </Text>
+                            <Image style = {styles.iconAdd} source = {update} />
                         </View>   
                     </TouchableOpacity>
                 </View>
                 <Dialog.Container visible = {this.state.dialogUpdate}>
+                <ScrollView style = {styles.container1}>
                     <Dialog.Title>Update Personal Information</Dialog.Title>
                     <Dialog.Input placeholder = 'First Name!' onChangeText = {this._onChaneFist.bind(this)} ></Dialog.Input>
                     <Dialog.Input placeholder = 'Last Name!' onChangeText = {this._onChaneLast.bind(this)} ></Dialog.Input>
-                    <Dialog.Input placeholder = 'DateOfBirth! (mm/dd/yy)' onChangeText = {this._onChaneDOB.bind(this)} ></Dialog.Input>
+                    <View style = {styles.DOB}>
+                        <Text style={styles.textDate}>DateOfBirth: {DOB1}</Text>
+                        <TouchableOpacity onPress={this._showDateTimePicker}>
+                            <Image style = {styles.iconDate} source={date}></Image>
+                        </TouchableOpacity>
+                        <DateTimePicker
+                            isVisible={isDateTimePickerVisible}
+                            onConfirm={this._handleDatePicked}
+                            onCancel={this._hideDateTimePicker}
+                            mode= {'date'}
+                            is24Hour = {false}
+                        />
+                    </View>
                     <Dialog.Input placeholder = 'Address' onChangeText = {this._onChaneAddress.bind(this)} ></Dialog.Input>
                     <Dialog.Input placeholder = 'Phone Number' onChangeText = {this._onChanePhoneNumber.bind(this)} ></Dialog.Input>
-                    <Dialog.Button label="Ok" onPress={this.handleUpdate} />
-                    <Dialog.Button label="Cancel" onPress={this.handleCancel} />
+                    <View style = {styles.DOB}>
+                        <Dialog.Button label="Ok" onPress={this.handleUpdate} />
+                        <Dialog.Button label="Cancel" onPress={this.handleCancel} />
+                    </View>
+                </ScrollView>
                 </Dialog.Container>
             </ImageBackground>
         );
@@ -191,10 +218,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,    
   },
+  container1: {
+    flex: 0.8,
+    height: '50%'  
+  },
   footer: {
     position: 'absolute',
     flex:1,
-    left: 0,
     right: 0,
     bottom: 10,
  
@@ -207,7 +237,6 @@ background:{
       paddingHorizontal:15,
   },
     button:{
-        backgroundColor:"#5858FA",
         paddingVertical: 8,
         marginVertical:3,
         alignItems: "center",
@@ -222,12 +251,18 @@ background:{
       textAlign: 'center',   
   },
   text: {
-    color: 'black',
+    color: '#642EFE',
     fontSize: 20,
     textAlign: 'center'
   },
+  textDate: {
+    color: '#424040',
+    fontSize: 16,
+    justifyContent: 'flex-start',
+    alignContent: 'center',
+    width: '70%',
+  },
   ThongTin: {
-    backgroundColor: '#fff',
     alignItems: "flex-start",
     position: "relative",
     borderRadius: 20,
@@ -235,4 +270,19 @@ background:{
     paddingTop: 10,
     paddingBottom: 20
   },
+  iconAdd:{
+    marginTop: 10,
+    width:50,
+    height:50,
+    },
+    DOB: {
+        flexDirection: 'row',
+        flex: 0.4,
+        alignContent: 'center',
+    },
+    iconDate: {
+        width:40,
+        height: 40,
+        marginLeft: 10,
+    },
 });

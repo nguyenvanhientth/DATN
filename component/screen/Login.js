@@ -4,17 +4,25 @@ import {StyleSheet,Text,TextInput,Button,View,Alert,TouchableOpacity,
 import env from '../environment/env';
 
 const BASE_URL = env;
-const background = require('../image/hinhnen.jpg') ;
+const background = require('../image/hinhnen.png') ;
 const lockIcon = require('../image/ic_lock.png');
 const userIcon = require('../image/ic_user.png');
 var STORAGE_KEY = 'key_access_token';
 const logo = require('../image/logo.png');
+const back = require('../image/back.png') ;
 
 export default class Login extends Component {
   static navigationOptions = {
     headerMode: 'none',
     title: 'Login',
-    headerBackTitleVisible: false
+    headerStyle: {
+      backgroundColor: '#189B8B',
+    },
+    headerTintColor: '#fff',
+    headerTitleStyle: {
+      fontWeight: 'bold',
+    },
+    headerLeft: null
   };
   constructor(props) {
     super(props);
@@ -118,7 +126,7 @@ export default class Login extends Component {
                         <Text style={styles.buttonText}> Login</Text>
                     </View>      
                 </TouchableOpacity>
-                <TouchableOpacity activeOpacity={.5} onPress={() => navigate('ForgotPassPage')}>
+                <TouchableOpacity  activeOpacity={.5} onPress={() => navigate('ForgotPassPage')}>
                     <View >
                     <Text style={styles.forgotPasswordText}>Forgot password?</Text>        
                     </View>      
@@ -181,8 +189,8 @@ const styles = StyleSheet.create({
   },
   forgotPasswordText:{
     color:'#0404B4',
-       backgroundColor:"transparent",
-         textAlign: 'center',
+    backgroundColor:"transparent",
+    textAlign: 'center',
   },
 });
 module.exports = Login;

@@ -4,8 +4,7 @@ import { StyleSheet, AsyncStorage } from 'react-native'
 export default class Screen1 extends React.Component {
   render() {
     var { navigate } = this.props.navigation;
-      navigate('LoginPage');
-    return null
+    return navigate('LoginPage');
   }
 }
 

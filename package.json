@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "react-devtools": "react-devtools"
   },
   "dependencies": {
     "haversine": "^1.1.0",
@@ -13,6 +14,7 @@
     "react-native-dialog": "^5.4.0",
     "react-native-image-crop-picker": "^0.21.3",
     "react-native-maps": "^0.22.0",
+    "react-native-modal-datetime-picker": "^6.0.0",
     "react-navigation": "^2.18.2"
   },
   "devDependencies": {

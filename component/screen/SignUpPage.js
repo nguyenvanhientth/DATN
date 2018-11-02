@@ -5,7 +5,7 @@ import env from '../environment/env';
 
 const BASE_URL = env;
 var STORAGE_KEY = 'key_access_token';
-const background = require('../image/hinhnen.jpg') ;
+const background = require('../image/hinhnen.png') ;
 const userIcon = require('../image/ic_user.png');
 const iconEmail = require('../image/email.png');
 const iconPhone = require('../image/phone.png');
@@ -14,6 +14,13 @@ const iconPhone = require('../image/phone.png');
 export default class SignUpPage extends Component {
     static navigationOptions = {
         title: 'Register',
+        headerStyle: {
+            backgroundColor: '#189B8B',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
       };
   constructor(props) {
     super(props);

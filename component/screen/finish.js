@@ -4,18 +4,22 @@ import {View, Text, StyleSheet, ScrollView, TextInput,Picker,
 } from 'react-native';
 import env from '../environment/env';
 
-const LATITUDE = 108.193318;
-const LONGITUDE = 16.072675;
 var ImagePicker = NativeModules.ImageCropPicker;
 const BASE_URL = env;
 var STORAGE_KEY = 'key_access_token';
 const company = require('../image/company.png') ;
 
 
-export default class App extends Component {
+export default class Finish extends Component {
   static navigationOptions = {
     title: 'Request',
-
+    headerStyle: {
+      backgroundColor: '#189B8B',
+    },
+    headerTintColor: '#fff',
+    headerTitleStyle: {
+      fontWeight: 'bold',
+    },
   };
 
   constructor(props) {
@@ -23,40 +27,12 @@ export default class App extends Component {
     this.state = {
       image: null,
       images: [],
-      content: '',
-      address: '',
-      company: '',
-      latitude: LATITUDE,
-      longitude: LONGITUDE,
-      data:[]
+      data:[],
+      id: this.props.navigation.getParam('id'),
     };
   }
 
   componentDidMount(){
-    AsyncStorage.getItem(STORAGE_KEY).then((user_data_json) => {
-      let token = user_data_json;   
-      if(token === undefined){
-        var { navigate } = this.props.navigation;
-        navigate('LoginPage');
-      }    
-      let url = BASE_URL + 'Company/GetAllCompany';
-      fetch(url,{
-          headers: {
-            'cache-control': 'no-cache',
-            Authorization: 'Bearer ' + token,
-            },
-        })
-        .then((res) => res.json())
-        .then((resData) => { 
-            this.setState({
-                data : [{name: 'Select Company!',id:''},...resData]
-              });
-            //  console.warn('data',this.state.data);
-          })
-        .catch((err) => {
-          console.warn(' loi update Area1',err);
-        })
-      })
   }
 
   pickSingleWithCamera(cropping) {
@@ -105,19 +81,15 @@ export default class App extends Component {
         var { navigate } = this.props.navigation;
         navigate('LoginPage');
        }    
-      let url = BASE_URL + 'Request/InsertRequest';
+      let url = BASE_URL + 'Request/RepairPersonFinish';
       let data = new FormData();
       const sessionId = new Date().getTime();
-      data.append("Content",this.state.content);
-      data.append("Address",this.state.address);
-      data.append("CompanyId",this.state.company)
-      data.append("LatIng_longitude",this.state.longitude);
-      data.append("Latlng_latitude",this.state.latitude);
+      data.append("RequestId",this.state.id);
       let arrImage = [];
       this.state.image ? arrImage.push(this.state.image) : arrImage = [...this.state.images];
       //console.warn('image',arrImage);
       arrImage.map((i) =>{
-        data.append("PictureRequest",{
+        data.append("ListPictureFinish",{
           uri: i.uri,
           type: 'image/jpg',
           name: `${sessionId}.jpg`,
@@ -125,7 +97,7 @@ export default class App extends Component {
       });
       //console.warn('data',data);
       fetch(url,{
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'multipart/form-data',
@@ -149,13 +121,9 @@ export default class App extends Component {
       })
     })
   }
-  _updateCompany = (id) => {
-    this.setState({company: id})
-}
   render() {
       return (
-        <ScrollView>
-          <View style= {[styles.container,styles.view]}>
+        <ScrollView style= {styles.container}>
             <ScrollView horizontal = {true}>
               {this.state.image ? this.renderAsset(this.state.image) : null}
               {this.state.images ? this.state.images.map(i => <View key={i.uri}>{this.renderAsset(i)}</View>) : null}
@@ -168,37 +136,9 @@ export default class App extends Component {
               <TouchableOpacity onPress={this.pickMultiple.bind(this)} style={styles.button}>
                 <Text style={styles.buttonText}>Select Multiple</Text>
               </TouchableOpacity>
-            <View style={styles.inputWrap}>
-                <TextInput  style={styles.input} placeholder="Content" onChangeText={(content) => this.setState({content})} underlineColorAndroid="transparent"/>
-            </View>
-            <View style={styles.inputWrap}>
-                <TextInput  style={styles.input} placeholder="Address" onChangeText={(address) => this.setState({address})} underlineColorAndroid="transparent"/>
-            </View>
-            <View style={styles.inputWrap}>
-                <View style={styles.iconWrap}>
-                    <Image source={company} resizeMode="contain" style={styles.icon}/>
-                </View>
-                <Text style = {styles.label}> Company </Text>
-                <Picker
-                    selectedValue={this.state.company}
-                    style={styles.combobox}
-                    onValueChange={this._updateCompany.bind(this)}>
-                    {
-                        this.state.data && this.state.data.map((item,index) =>{
-                            return <Picker.Item key = {index} label = {item.name} value = {item.id} />
-                        })
-                    }
-                </Picker>
-            </View>
-            <TouchableOpacity onPress={()=>this.props.navigation.navigate('MapsPage')} keyboardShouldPersistTaps={true}>
-              <View style={styles.button}>
-                <Text style={styles.buttonText}> Open Maps </Text>
-              </View>   
-            </TouchableOpacity>
             <TouchableOpacity onPress={this.Upload.bind(this)} style={styles.button}>
               <Text style={styles.buttonText}>Send request</Text>
             </TouchableOpacity>
-        </View>
       </ScrollView>
       );
   }
@@ -207,14 +147,13 @@ export default class App extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: null,
-    height: null
-  },
-  view: {
+    width: Dimensions.get('window').width,
+    height:  Dimensions.get('window').height,
+    backgroundColor: '#E5E5E5',
     paddingHorizontal:15,
   },
   button:{
-    backgroundColor:"#d73352",
+    backgroundColor:"#91b4ce",
     paddingVertical: 8,
     marginVertical: 5,
     alignItems: "center",
@@ -237,39 +176,4 @@ buttonText: {
   color:'#FFFFFF',
   textAlign: 'center',   
 },
-  footer: {
-    position: 'absolute',
-    flex:1,
-    left: 0,
-    right: 0,
-    bottom: 10,
-    },
-  combobox: {
-    backgroundColor: '#848484',
-    height: 36,
-    flex:1,
-    paddingHorizontal: 5,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  icon:{
-    width: 20,
-    height: 20,
-  },
-  iconWrap:{
-    paddingHorizontal:7,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor:"#288BF5"
-  },
-  label: {
-    flex: 1, 
-    backgroundColor: '#585858',
-    marginRight: 10,
-    textAlign: "center",
-    paddingHorizontal: 5,
-    paddingTop: 5,
-    fontSize: 20,
-    color: "#FFF"
-  },
 });

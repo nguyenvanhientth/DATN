@@ -4,13 +4,19 @@ import env from '../environment/env';
 
 const BASE_URL = env;
 const icon = require('../image/ic_lock.png');
-const background = require('../image/hinhnen.jpg') ;
+const background = require('../image/hinhnen.png') ;
 
 class ChanePassword extends Component {
    
     static navigationOptions = {
         title: 'ChanePassWord',
-        headers: null
+        headerStyle: {
+            backgroundColor: '#189B8B',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
       };
       constructor(props) {
         super(props);

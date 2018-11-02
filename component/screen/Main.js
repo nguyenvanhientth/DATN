@@ -5,11 +5,12 @@ import env from '../environment/env';
 import Dialog from "react-native-dialog";
 
 var STORAGE_KEY = 'key_access_token';
-const background = require('../image/hinhnen.jpg') ;
+const background = require('../image/hinhnen.png') ;
 const addUser = require('../image/addUser.png') ;
 const company = require('../image/company.png') ;
 const addCompany = require('../image/addCompany.png') ;
 const list = require('../image/list.png') ;
+const add = require('../image/add.png') ;
 const BASE_URL = env;
 
 export default class Main extends Component {
@@ -79,9 +80,9 @@ export default class Main extends Component {
         return (
          <TouchableOpacity style={styles.flatview} onPress={()=>this.props.navigation.navigate('CheckedPage',{id: item.id})}>
             <Image style = {styles.anh} source= {{uri: item.pictureRequest[0]}}/>
-            <View>
+            <View style = {styles.line}>
                 <Text style={styles.name} >Address: {item.address}</Text>
-                <Text style={styles.email} >Status: {item.status}</Text>
+                <Text style={styles.title} >Status: <Text style = {styles.email}>{item.status}</Text></Text>
             </View>
          </TouchableOpacity>
         );
@@ -149,7 +150,7 @@ export default class Main extends Component {
                   })
               })
                   .then((responseJSON) => {  
-                      console.warn('creacte company',responseJSON)
+                      //console.warn('creacte company',responseJSON)
                           if(responseJSON.ok){
                               var { navigate } = this.props.navigation;
                               navigate('drawerStack');
@@ -176,7 +177,7 @@ export default class Main extends Component {
                 source = {background}  resizeMode="cover">
                 <View style = { styles.row}>
                     <TouchableOpacity style= {styles.column} activeOpacity={.5} onPress = {()=>this.props.navigation.navigate('SignUpPage')}  keyboardShouldPersistTaps={true}>
-                        <View style = {styles.buttonAd}>
+                        <View style = {[styles.buttonAd,{backgroundColor:'#08B358'}]}>
                             <View style={styles.iconWrap}>
                                 <Image source = {addUser} style = {styles.icon}/>
                             </View>
@@ -184,7 +185,7 @@ export default class Main extends Component {
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity style= {styles.column} activeOpacity={.5} onPress = {this._addCompany.bind(this)} keyboardShouldPersistTaps={true}>
-                        <View style = {styles.buttonAd}>
+                        <View style = {[styles.buttonAd,{backgroundColor: '#B558E8'}]}>
                             <View style={styles.iconWrap}>
                                 <Image source = {company} style = {styles.icon}/>
                             </View>
@@ -194,7 +195,7 @@ export default class Main extends Component {
                 </View>
                 <View style = { styles.row}>
                     <TouchableOpacity style= {styles.column} activeOpacity={.5} onPress = {() =>this.props.navigation.navigate('ListCompanyPage')}  keyboardShouldPersistTaps={true}>
-                        <View style = {styles.buttonAd}>
+                        <View style = {[styles.buttonAd,{backgroundColor: '#6AC6E5'}]}>
                             <View style={styles.iconWrap}>
                                 <Image source = {list} style = {styles.icon}/>
                             </View>
@@ -202,11 +203,11 @@ export default class Main extends Component {
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity style= {styles.column} activeOpacity={.5} onPress = {this._onPressLogOut.bind(this)} keyboardShouldPersistTaps={true}>
-                        <View style = {styles.buttonAd}>
+                        <View style = {[styles.buttonAd,{backgroundColor:'#BEDB6E'}]}>
                             <View style={styles.iconWrap}>
                                 <Image source = {addCompany} style = {styles.icon}/>
                             </View>
-                            <Text style = {styles.textAd}> Add Company for User </Text>
+                            <Text style = {styles.textAd}> Company for User </Text>
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -219,17 +220,17 @@ export default class Main extends Component {
                 </Dialog.Container>
            </ImageBackground>
         );
-     } else {
+     } else if(this.state.Position === "Supervisor"){
          if(this.state.data.length === 0){
             return (
                 <ImageBackground style={ styles.background}
                     source = {background}  resizeMode="cover">
-                    <Text style={styles.h2text}> Requested </Text>
+                    {/* <Text style={styles.h2text}> Requested </Text> */}
                     <Text style = {styles.text}> No Request!~ </Text>
                     <View style={styles.footer}>
                         <TouchableOpacity activeOpacity={.5} onPress={()=>this.props.navigation.navigate('UpdateImagePage')} keyboardShouldPersistTaps={true}>
                             <View style={styles.button}>
-                                <Text style={styles.buttonText}> Up Request </Text>
+                                <Image style = {styles.iconAdd} source= {add} />
                             </View>   
                         </TouchableOpacity>
                     </View>
@@ -239,7 +240,7 @@ export default class Main extends Component {
         else return(
         <ImageBackground style={ styles.background}
         source = {background}  resizeMode="cover">
-        <Text style={styles.h2text}> Requested </Text>
+        {/* <Text style={styles.h2text}> Requested </Text> */}
         <View style = {styles.Container}>
             <FlatList
             data={this.state.data}
@@ -251,9 +252,34 @@ export default class Main extends Component {
         <View style={styles.footer}>
             <TouchableOpacity activeOpacity={.5} onPress={()=>this.props.navigation.navigate('UpdateImagePage')} keyboardShouldPersistTaps={true}>
                 <View style={styles.button}>
-                    <Text style={styles.buttonText}> Up Request </Text>
+                    <Image style = {styles.iconAdd} source= {add} />
                 </View>   
             </TouchableOpacity>
+        </View>
+        </ImageBackground>
+        );
+    }
+    else {
+        if(this.state.data.length === 0){
+            return (
+                <ImageBackground style={ styles.background}
+                    source = {background}  resizeMode="cover">
+                    {/* <Text style={styles.h2text}> Job </Text> */}
+                    <Text style = {styles.text}> No Job!~ </Text>
+                </ImageBackground>
+            );
+        }
+        else return(
+        <ImageBackground style={ styles.background}
+        source = {background}  resizeMode="cover">
+        {/* <Text style={styles.h2text}> Job </Text> */}
+        <View style = {styles.Container}>
+            <FlatList
+            data={this.state.data}
+            ItemSeparatorComponent = {this.FlatListItemSeparator}
+            renderItem={this._renderList}
+            keyExtractor={item => item.address}
+            />
         </View>
         </ImageBackground>
         );
@@ -273,9 +299,8 @@ const styles = StyleSheet.create({
   footer: {
     position: 'absolute',
     flex:1,
-    left: 0,
     right: 0,
-    bottom: 10,
+    bottom: 15,
     },
   row: {
     flex: 1,
@@ -288,6 +313,10 @@ const styles = StyleSheet.create({
     backgroundColor:'#CED8F6',
     margin: 10,
     borderRadius: 20
+  },
+  line: {
+    paddingLeft: 10,
+    width: '75%'
   },
   background:{
     width: Dimensions.get('window').width,
@@ -306,6 +335,11 @@ const styles = StyleSheet.create({
     width:100,
     height:100,
     },
+    iconAdd:{
+        marginTop: 10,
+        width:50,
+        height:50,
+        },
   wrapper:{
       paddingHorizontal:15,
   },
@@ -318,31 +352,30 @@ const styles = StyleSheet.create({
 name: {
     fontFamily: 'Verdana',
     fontSize: 18,
-    color:'#060506',
-    fontWeight: 'bold',
+    color:'#424040',
+    fontWeight: '100',
+  },
+  title: {
+    color: 'black',
+    fontWeight: '100'
   },
 email: {
-    color: 'red'
+    color: 'blue'
   },
 button:{
-    backgroundColor:"#5858FA",
     paddingVertical: 8,
     marginVertical:3,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 15,
     marginLeft: 20,
-    marginRight: 20
+    marginRight: 20,
+    padding: 15,
 },
 buttonAd:{
-    paddingVertical: 8,
-    marginVertical:3,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 15,
-    flex:1,
-    marginLeft: 20,
-    marginRight: 20
+    flex: 1,
 },
   buttonText: {
       fontSize: 16,
@@ -350,12 +383,12 @@ buttonAd:{
       textAlign: 'center',   
   },
   text: {
-    color: 'black',
+    color: 'gray',
     fontSize: 20,
     textAlign: 'center'
   },
   textAd: {
-    color: 'black',
+    color: '#616555',
     fontSize: 15,
     textAlign: 'center'
   },
@@ -384,6 +417,5 @@ buttonAd:{
   anh: {
     width: 100,
     height: 100,
-    backgroundColor: 'red'
   },
 });
